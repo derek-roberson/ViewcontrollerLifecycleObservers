@@ -226,17 +226,18 @@ class ViewControllerLifecycleObserversTests: XCTestCase {
 		window.makeKeyAndVisible()
 		let expectation = expectation(description: "Wait for lifecycle callbacks")
 		let viewController = UIViewController()
-		viewController.onViewWillAppear { [weak viewController] in
+		viewController.onViewWillAppear { [weak viewController, weak navigation] in
 			viewController?.onViewDidAppear {
-				navigation.viewControllers.removeAll()
 				viewController?.onViewWillDisappear {
 					viewController?.onViewDidDisappear {
 						expectation.fulfill()
 					}
 				}
+				
+				navigation?.setViewControllers([], animated: false)
 			}
-			
 		}
+		
 		navigation.pushViewController(viewController, animated: true)
 		wait(for: [expectation], timeout: 1)
 	}
